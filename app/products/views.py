@@ -29,11 +29,14 @@ class AddProductImage(generics.GenericAPIView):
     def post(self, request, pk):
         try:
             product = Product.objects.get(pk=pk)
+            image = request.FILES['image']
+            ProductImage.objects.create(product=product, file=image)
+            return JsonResponse(data={"status": "ok"})
         except KeyError:
-            pass
+            return JsonResponse(data={"status": "Image file not found."}, status=status.HTTP_404_NOT_FOUND)
         except Product.DoesNotExist:
             return JsonResponse(data={"status": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-        return JsonResponse(data={"status": "ok"})
+
 
     def get_queryset(self):
         return ProductImage.objects.all()
